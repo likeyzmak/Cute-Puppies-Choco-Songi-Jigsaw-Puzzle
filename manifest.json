@@ -3,10 +3,13 @@
   "short_name": "Puppy Puzzle",
   "description": "A fun jigsaw puzzle game featuring cute puppies.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#fff8f0",
   "theme_color": "#ffc1cc",
   "orientation": "any",
+  "lang": "ko",
+  "dir": "ltr",
   "launch_handler": {
     "client_mode": "auto"
   },
@@ -27,5 +30,10 @@
   "window_controls_overlay": {
     "visible": true
   },
-  "id": "Cute Puppies"
+  "id": "Cute Puppies",
+  "categories": ["games", "puzzle"],
+  "iarc_rating_id": "E10+",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "scope_extensions": []
 }
