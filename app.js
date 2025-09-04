@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const changeImageBtn = document.getElementById('change-image-btn');
     const changeDifficultyBtn = document.getElementById('change-difficulty-btn');
     const soundToggleBtn = document.getElementById('sound-toggle-btn');
-    const playAgainBtn = document.getElementById('play-again-btn');
+    
     const victoryChangeImageBtn = document.getElementById('victory-change-image-btn');
     
 
@@ -104,10 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
         changeDifficultyBtn.addEventListener('click', () => showDifficultyModal(true));
         victoryChangeDifficultyBtn.addEventListener('click', () => showDifficultyModal(true));
         soundToggleBtn.addEventListener('click', toggleSound);
-        playAgainBtn.addEventListener('click', () => {
-            hideVictoryModal();
-            startGame(gameState.imageSrc, gameState.gridSize, false);
-        });
+        
     }
 
     // --- Game Flow ---
@@ -339,17 +336,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Features (Hint, Original View) ---
     let hintTimeout = null;
     function showHint() {
-        clearHints();
-        const misplacedCell = gameState.perm.findIndex((piece, cell) => piece !== cell);
-        if (misplacedCell === -1) return;
-        const pieceInCell = gameState.perm[misplacedCell];
-        const correctCellForPiece = pieceInCell;
-        const sourceTile = puzzleBoard.querySelector(`[data-grid-index="${misplacedCell}"]`);
-        const targetTile = puzzleBoard.querySelector(`[data-grid-index="${correctCellForPiece}"]`);
-        sourceTile.classList.add('hint-source');
-        targetTile.classList.add('hint-target');
-        hintTimeout = setTimeout(clearHints, 3000);
-    }
+            clearHints();
+            const misplacedCell = gameState.perm.findIndex((piece, cell) => piece !== cell); // Cell index that is wrong
+            if (misplacedCell === -1) return; // Puzzle is solved
+
+            const pieceId = gameState.perm[misplacedCell]; // The piece (original index) currently at misplacedCell
+            const correctDestinationCell = pieceId; // The cell where this piece should ultimately go
+
+            // Highlight the piece that is currently at the misplaced cell
+            const sourceTileEl = puzzleBoard.querySelector(`[data-grid-index="${misplacedCell}"]`);
+
+            // Highlight the cell where this piece should ultimately go
+            const targetTileEl = puzzleBoard.querySelector(`[data-grid-index="${correctDestinationCell}"]`);
+
+            sourceTileEl.classList.add('hint-source');
+            targetTileEl.classList.add('hint-target');
+            hintTimeout = setTimeout(clearHints, 3000);
+        }
 
     function clearHints() {
         clearTimeout(hintTimeout);
