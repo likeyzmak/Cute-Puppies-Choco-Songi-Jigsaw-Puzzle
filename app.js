@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const soundToggleBtn = document.getElementById('sound-toggle-btn');
     
     const victoryChangeImageBtn = document.getElementById('victory-change-image-btn');
+    const victoryScoreEl = document.getElementById('victory-score');
     
 
     // Audio
@@ -41,6 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
         6: 300,    // 5 minutes
         8: 600,    // 10 minutes
         12: 1200   // 20 minutes
+    };
+
+    const scoringConfig = {
+        4: { baseScore: 1000, movePenalty: 10 },
+        6: { baseScore: 2000, movePenalty: 8 },
+        8: { baseScore: 3000, movePenalty: 6 },
+        12: { baseScore: 5000, movePenalty: 4 }
     };
 
     // --- Game State ---
@@ -392,6 +400,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeTaken = gameState.timeLimit > 0 ? gameState.timeLimit - gameState.time : gameState.time;
         document.getElementById('victory-time').textContent = formatTime(timeTaken);
         document.getElementById('victory-moves').textContent = gameState.moves;
+
+        // Calculate Score
+        const config = scoringConfig[gameState.gridSize];
+        let finalScore = 0;
+        if (config) {
+            finalScore = Math.max(0, config.baseScore - (gameState.moves * config.movePenalty));
+        }
+        victoryScoreEl.textContent = finalScore; // Update score display
+
         victoryModal.classList.remove('hidden');
         playFanfare();
         runConfetti();
