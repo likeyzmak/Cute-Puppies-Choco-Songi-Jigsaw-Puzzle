@@ -1,5 +1,5 @@
 {
-  "name": "🐶🧩 Cute Puppies: Choco & Songi",
+  "name": "🐶🧩 Cute Puppies: Choco &amp; Songi",
   "short_name": "Puppy Puzzle",
   "description": "A fun jigsaw puzzle game featuring cute puppies.",
   "start_url": "./",
@@ -17,5 +17,6 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "id": "Cute Puppies"
 }
