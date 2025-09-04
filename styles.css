@@ -118,9 +118,17 @@ body {
 .puzzle-tile:hover { box-shadow: var(--shadow-md); transform: scale(1.02); z-index: 10; }
 .puzzle-tile.dragging { cursor: grabbing; z-index: 9999; box-shadow: var(--shadow-lg); transition: none; }
 .puzzle-tile.drop-target { outline: 4px solid var(--c-accent); outline-offset: -4px; }
-.puzzle-tile.hint-source, .puzzle-tile.hint-target { animation: hint-pulse 0.7s infinite alternate; }
 .puzzle-tile.hint-source { box-shadow: 0 0 20px 5px #ffdd57; }
-.puzzle-tile.hint-target { box-shadow: 0 0 20px 5px #a2d2ff; }
+.puzzle-tile.hint-target { box-shadow: 0 0 20px 5px #a2d2ff; } /* Keep this for now, will remove if not needed */
+
+.hint-target-cell {
+    position: absolute;
+    border: 4px dashed var(--c-accent); /* Example style */
+    border-radius: 4px;
+    pointer-events: none; /* Allow clicks to pass through */
+    z-index: 10; /* Above other tiles, below dragging tile */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
 @keyframes hint-pulse { to { transform: scale(1.05); } }
 
 /* Sidebar */

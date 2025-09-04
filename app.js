@@ -335,28 +335,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Features (Hint, Original View) ---
     let hintTimeout = null;
+    let hintTargetEl = null; // Global variable for the dynamic target highlight
+
     function showHint() {
-            clearHints();
-            const misplacedCell = gameState.perm.findIndex((piece, cell) => piece !== cell); // Cell index that is wrong
-            if (misplacedCell === -1) return; // Puzzle is solved
+        clearHints();
+        const misplacedCell = gameState.perm.findIndex((piece, cell) => piece !== cell); // Cell index that is wrong
+        if (misplacedCell === -1) return; // Puzzle is solved
 
-            const pieceId = gameState.perm[misplacedCell]; // The piece (original index) currently at misplacedCell
-            const correctDestinationCell = pieceId; // The cell where this piece should ultimately go
+        const pieceId = gameState.perm[misplacedCell]; // The piece (original index) currently at misplacedCell
+        const correctDestinationCell = pieceId; // The cell where this piece should ultimately go
 
-            // Highlight the piece that is currently at the misplaced cell
-            const sourceTileEl = puzzleBoard.querySelector(`[data-grid-index="${misplacedCell}"]`);
+        // Highlight the piece that is currently at the misplaced cell
+        const sourceTileEl = puzzleBoard.querySelector(`[data-grid-index="${misplacedCell}"]`);
+        sourceTileEl.classList.add('hint-source');
 
-            // Highlight the cell where this piece should ultimately go
-            const targetTileEl = puzzleBoard.querySelector(`[data-grid-index="${correctDestinationCell}"]`);
+        // Create and position the dynamic target highlight
+        hintTargetEl = document.createElement('div');
+        hintTargetEl.classList.add('hint-target-cell');
 
-            sourceTileEl.classList.add('hint-source');
-            targetTileEl.classList.add('hint-target');
-            hintTimeout = setTimeout(clearHints, 3000);
-        }
+        // Calculate position and size of the target cell
+        const boardSize = parseFloat(puzzleBoard.style.getPropertyValue('--board-size'));
+        const tileSize = boardSize / gameState.gridSize;
+
+        const targetRow = Math.floor(correctDestinationCell / gameState.gridSize);
+        const targetCol = correctDestinationCell % gameState.gridSize;
+
+        hintTargetEl.style.width = `${tileSize}px`;
+        hintTargetEl.style.height = `${tileSize}px`;
+        hintTargetEl.style.left = `${targetCol * tileSize}px`;
+        hintTargetEl.style.top = `${targetRow * tileSize}px`;
+
+        puzzleBoard.appendChild(hintTargetEl);
+
+        hintTimeout = setTimeout(clearHints, 3000);
+    }
 
     function clearHints() {
         clearTimeout(hintTimeout);
-        document.querySelectorAll('.hint-source, .hint-target').forEach(el => el.classList.remove('hint-source', 'hint-target'));
+        document.querySelectorAll('.hint-source').forEach(el => el.classList.remove('hint-source'));
+        // Remove the dynamic target highlight element
+        if (hintTargetEl && hintTargetEl.parentNode) {
+            hintTargetEl.parentNode.removeChild(hintTargetEl);
+            hintTargetEl = null;
+        }
     }
 
     function showOriginalView() {
