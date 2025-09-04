@@ -1,11 +1,15 @@
 {
-  "name": "🐶🧩 Cute Puppies: Choco &amp;amp; Songi",
+  "name": "🐶🧩 Cute Puppies: Choco &amp; Songi",
   "short_name": "Puppy Puzzle",
   "description": "A fun jigsaw puzzle game featuring cute puppies.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#fff8f0",
   "theme_color": "#ffc1cc",
+  "orientation": "any",
+  "launch_handler": {
+    "client_mode": "auto"
+  },
   "icons": [
     {
       "src": "assets/images/choco_songi_app_icon_192x192.png",
@@ -18,5 +22,10 @@
       "type": "image/png"
     }
   ],
+  "screenshots": [],
+  "display_override": ["window-controls-overlay", "standalone", "fullscreen"],
+  "window_controls_overlay": {
+    "visible": true
+  },
   "id": "Cute Puppies"
 }
