@@ -130,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         registerScoreBtn.addEventListener('click', registerScore);
         viewLeaderboardBtn.addEventListener('click', showLeaderboard);
         closeLeaderboardBtn.addEventListener('click', hideLeaderboard);
+        leaderboardChangeImageBtn.addEventListener('click', returnToGallery);
     }
 
     // --- Game Flow ---
@@ -685,5 +686,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Start the app ---
+    init();
+});-
     init();
 });
