@@ -1,0 +1,8 @@
+{
+  "name": "puzzle-leaderboard-api",
+  "version": "1.0.0",
+  "description": "Dependencies for the Netlify serverless function.",
+  "dependencies": {
+    "@netlify/blobs": "^6.4.0"
+  }
+}
