@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isGameActive: false,
         firstInteraction: false,
         finalScore: 0,
-        emotionIcon: '', // Added to store the emotion icon
+        emotionText: '', // Changed from emotionIcon to emotionText
     };
 
     let tiles = [];
@@ -410,10 +410,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Win & Game Over Condition ---
-    function getEmotionIcon(score) {
-        if (score > 70) return '😄'; // Good job
-        if (score > 40) return '😐'; // Average
-        return '😥'; // Could be better
+    function getEmotionText(score) {
+        if (score > 70) return '🌟👏 Great Job!';
+        if (score > 40) return '😐🤔 So-so';
+        return '😵❌ Failed!';
     }
 
     function handleWin() {
@@ -429,10 +429,10 @@ document.addEventListener('DOMContentLoaded', () => {
             finalScore = Math.max(0, config.baseScore - (gameState.moves * config.movePenalty) - timeTaken);
         }
         gameState.finalScore = Math.round(finalScore);
-        gameState.emotionIcon = getEmotionIcon(gameState.finalScore);
+        gameState.emotionText = getEmotionText(gameState.finalScore);
 
         victoryScoreEl.textContent = gameState.finalScore;
-        victoryEmotionIconEl.textContent = gameState.emotionIcon;
+        victoryEmotionIconEl.textContent = gameState.emotionText;
 
         registerScoreBtn.disabled = false;
         victoryModal.classList.remove('hidden');
@@ -483,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
             difficulty: `${gameState.gridSize}x${gameState.gridSize}`,
             time: formatTime(gameState.timeLimit > 0 ? gameState.timeLimit - gameState.time : gameState.time),
             date: new Date().toLocaleDateString(),
-            emotion: gameState.emotionIcon, // Save emotion icon
+            emotion: gameState.emotionText, // Changed from emotionIcon to emotionText
         };
 
         scores.push(newScore);
@@ -514,7 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <th>순위</th>
                             <th>닉네임</th>
                             <th>점수</th>
-                            <th>감정</th>
+                            <th>상태</th>
                             <th>난이도</th>
                             <th>시간</th>
                             <th>날짜</th>
