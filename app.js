@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         restartBtn.addEventListener('click', () => startGame(gameState.imageSrc, gameState.gridSize, false));
         hintBtn.addEventListener('click', showHint); // Top bar hint button
-        viewRankingsBtn.addEventListener('click', showLeaderboard); // New controls panel button
+        if (viewRankingsBtn) viewRankingsBtn.addEventListener('click', showLeaderboard); // New controls panel button
         originalViewBtn.addEventListener('click', showOriginalView);
         changeImageBtn.addEventListener('click', returnToGallery);
         victoryChangeImageBtn.addEventListener('click', returnToGallery);
