@@ -90,6 +90,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initialization ---
     function init() {
+        // --- TEMPORARY TEST CODE ---
+        if (!localStorage.getItem('testDataGenerated')) {
+            var LEADERBOARD_KEY = 'jigsawLeaderboard';
+            var MAX_LEADERBOARD_ENTRIES = 50;
+            var fakeScores = [];
+            for (var i = 0; i < MAX_LEADERBOARD_ENTRIES + 5; i++) {
+                fakeScores.push({
+                    nickname: 'TestUser' + (i + 1),
+                    score: 100 - i,
+                    difficulty: '4x4',
+                    time: '00:00',
+                    date: new Date().toLocaleDateString(),
+                    emotion: '😐🤔 So-so',
+                });
+            }
+            localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(fakeScores));
+            localStorage.setItem('testDataGenerated', 'true');
+            alert('55개의 테스트 점수를 등록했습니다. 리더보드를 열어 확인해보세요.');
+        }
+        // --- END TEMPORARY TEST CODE ---
+
         populateGallery();
         addEventListeners();
         updateSoundButtonUI();
