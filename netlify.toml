@@ -1,0 +1,15 @@
+# Netlify configuration file
+
+[build]
+  # This is the directory where Netlify will look for our serverless functions.
+  functions = "netlify/functions"
+
+# This rule makes our function available at a cleaner URL (/api/leaderboard instead of /.netlify/functions/leaderboard)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Explicitly enable the Netlify Blobs plugin
+[[plugins]]
+  package = "@netlify/plugin-blobs"
