@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Buttons
     const shuffleBtn = document.getElementById('shuffle-btn');
-    const hintBtn = document.getElementById('hint-btn');
+    const hintBtn = document.getElementById('hint-btn'); // This is the top bar hint button
+    const viewRankingsBtn = document.getElementById('view-rankings-btn'); // New button in controls
     const originalViewBtn = document.getElementById('original-view-btn');
     const restartBtn = document.getElementById('restart-btn');
     const changeImageBtn = document.getElementById('change-image-btn');
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const victoryChangeImageBtn = document.getElementById('victory-change-image-btn');
     const victoryScoreEl = document.getElementById('victory-score');
+    const victoryEmotionIconEl = document.getElementById('victory-emotion-icon'); // New emotion icon element
 
     // Leaderboard Buttons
     const registerScoreBtn = document.getElementById('register-score-btn');
@@ -49,11 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
         12: 1200   // 20 minutes
     };
 
+    // Scoring config updated to a 100-point scale
     const scoringConfig = {
-        4: { baseScore: 1000, movePenalty: 10 },
-        6: { baseScore: 2000, movePenalty: 8 },
-        8: { baseScore: 3000, movePenalty: 6 },
-        12: { baseScore: 5000, movePenalty: 4 }
+        4: { baseScore: 100, movePenalty: 1 },
+        6: { baseScore: 100, movePenalty: 0.8 },
+        8: { baseScore: 100, movePenalty: 0.6 },
+        12: { baseScore: 100, movePenalty: 0.4 }
     };
 
     const LEADERBOARD_KEY = 'jigsawLeaderboard';
@@ -72,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isGameActive: false,
         firstInteraction: false,
         finalScore: 0,
+        emotionIcon: '', // Added to store the emotion icon
     };
 
     let tiles = [];
@@ -114,7 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
             applyPositions();
         });
         restartBtn.addEventListener('click', () => startGame(gameState.imageSrc, gameState.gridSize, false));
-        hintBtn.addEventListener('click', showHint);
+        hintBtn.addEventListener('click', showHint); // Top bar hint button
+        viewRankingsBtn.addEventListener('click', showLeaderboard); // New controls panel button
         originalViewBtn.addEventListener('click', showOriginalView);
         changeImageBtn.addEventListener('click', returnToGallery);
         victoryChangeImageBtn.addEventListener('click', returnToGallery);
@@ -405,6 +410,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Win & Game Over Condition ---
+    function getEmotionIcon(score) {
+        if (score > 70) return '😄'; // Good job
+        if (score > 40) return '😐'; // Average
+        return '😥'; // Could be better
+    }
+
     function handleWin() {
         stopTimer();
         gameState.isGameActive = false;
@@ -418,7 +429,10 @@ document.addEventListener('DOMContentLoaded', () => {
             finalScore = Math.max(0, config.baseScore - (gameState.moves * config.movePenalty) - timeTaken);
         }
         gameState.finalScore = Math.round(finalScore);
+        gameState.emotionIcon = getEmotionIcon(gameState.finalScore);
+
         victoryScoreEl.textContent = gameState.finalScore;
+        victoryEmotionIconEl.textContent = gameState.emotionIcon;
 
         registerScoreBtn.disabled = false;
         victoryModal.classList.remove('hidden');
@@ -468,7 +482,8 @@ document.addEventListener('DOMContentLoaded', () => {
             score: gameState.finalScore,
             difficulty: `${gameState.gridSize}x${gameState.gridSize}`,
             time: formatTime(gameState.timeLimit > 0 ? gameState.timeLimit - gameState.time : gameState.time),
-            date: new Date().toLocaleDateString()
+            date: new Date().toLocaleDateString(),
+            emotion: gameState.emotionIcon, // Save emotion icon
         };
 
         scores.push(newScore);
@@ -499,6 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <th>순위</th>
                             <th>닉네임</th>
                             <th>점수</th>
+                            <th>감정</th>
                             <th>난이도</th>
                             <th>시간</th>
                             <th>날짜</th>
@@ -510,6 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <td>${i + 1}</td>
                                 <td>${s.nickname}</td>
                                 <td>${s.score}</td>
+                                <td>${s.emotion}</td>
                                 <td>${s.difficulty}</td>
                                 <td>${s.time}</td>
                                 <td>${s.date}</td>
