@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerScoreBtn = document.getElementById('register-score-btn');
     const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
     const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
+    const leaderboardChangeImageBtn = document.getElementById('leaderboard-change-image-btn');
 
     // Audio
     const bgmAudio = document.getElementById('bgm-audio');
