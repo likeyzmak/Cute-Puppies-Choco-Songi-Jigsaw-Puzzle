@@ -91,23 +91,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Initialization ---
     function init() {
         // --- TEMPORARY TEST CODE ---
-        if (!localStorage.getItem('testDataGenerated')) {
+        if (!localStorage.getItem('testDataGenerated_low_scores_2')) { // Changed flag name
             var LEADERBOARD_KEY = 'jigsawLeaderboard';
             var MAX_LEADERBOARD_ENTRIES = 50;
             var fakeScores = [];
-            for (var i = 0; i < MAX_LEADERBOARD_ENTRIES + 5; i++) {
+            // Generate scores from 50 down to 1
+            for (var i = 0; i < MAX_LEADERBOARD_ENTRIES; i++) {
                 fakeScores.push({
                     nickname: 'TestUser' + (i + 1),
-                    score: 100 - i,
+                    score: 50 - i,
                     difficulty: '4x4',
                     time: '00:00',
                     date: new Date().toLocaleDateString(),
-                    emotion: '😐🤔 So-so',
+                    emotion: '😥',
+                    timestamp: Date.now() + i // Add staggered timestamp
                 });
             }
             localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(fakeScores));
-            localStorage.setItem('testDataGenerated', 'true');
-            alert('55개의 테스트 점수를 등록했습니다. 리더보드를 열어 확인해보세요.');
+            localStorage.setItem('testDataGenerated_low_scores_2', 'true');
+            alert('50개의 낮은 점수 테스트 데이터를 등록했습니다. 이제 게임을 플레이하고 점수를 등록하면 새로운 정렬 방식과 삭제 로직을 테스트할 수 있습니다.');
+            window.location.reload();
         }
         // --- END TEMPORARY TEST CODE ---
 
@@ -504,16 +507,22 @@ document.addEventListener('DOMContentLoaded', () => {
             difficulty: `${gameState.gridSize}x${gameState.gridSize}`,
             time: formatTime(gameState.timeLimit > 0 ? gameState.timeLimit - gameState.time : gameState.time),
             date: new Date().toLocaleDateString(),
-            emotion: gameState.emotionText, // Changed from emotionIcon to emotionText
+            emotion: gameState.emotionText,
+            timestamp: Date.now() // Add timestamp
         };
 
         scores.push(newScore);
         
-        scores.sort((a, b) => b.score - a.score);
+        // Sort by timestamp descending to get the most recent scores
+        scores.sort((a, b) => b.timestamp - a.timestamp);
 
+        // Keep only the 50 most recent scores
         if (scores.length > MAX_LEADERBOARD_ENTRIES) {
             scores.splice(MAX_LEADERBOARD_ENTRIES);
         }
+
+        // Sort the 50 recent scores by score descending
+        scores.sort((a, b) => b.score - a.score);
 
         saveScores(scores);
         registerScoreBtn.disabled = true;
