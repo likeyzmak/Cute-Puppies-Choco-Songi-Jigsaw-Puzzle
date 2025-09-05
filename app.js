@@ -100,10 +100,29 @@ document.addEventListener('DOMContentLoaded', () => {
         imageManifest.forEach(filename => {
             const thumb = document.createElement('div');
             thumb.className = 'gallery-thumbnail';
-            thumb.innerHTML = `<img src="assets/images/${filename}" alt="Puzzle thumbnail ${filename}">`;
+
+            const img = new Image(); // Create an Image object to attach listeners
+            const imageUrl = `assets/images/${filename}`;
+            img.src = imageUrl;
+            img.alt = `Puzzle thumbnail ${filename}`;
+
+            // --- DEBUGGING CODE START ---
+            img.onerror = function() {
+                console.error(`Failed to load image: ${this.src}`);
+                // Visually display the error on the page
+                const errorInfo = document.createElement('p');
+                errorInfo.style.color = 'red';
+                errorInfo.style.fontSize = '12px';
+                errorInfo.textContent = `Error: ${this.src}`;
+                thumb.appendChild(errorInfo);
+            };
+            // --- DEBUGGING CODE END ---
+
+            thumb.appendChild(img); // Add the image to the thumbnail div
+
             thumb.addEventListener('click', () => {
                 handleFirstInteraction();
-                selectImage(`assets/images/${filename}`);
+                selectImage(imageUrl);
             });
             imageGallery.appendChild(thumb);
         });
