@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DEBUG: Script starting, DOMContentLoaded event fired."); // Script execution trace
+
     // --- DOM Elements ---
     const galleryScreen = document.getElementById('gallery-screen');
     const imageGallery = document.getElementById('image-gallery');
@@ -96,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function populateGallery() {
+        console.log("DEBUG: populateGallery function called."); // Script execution trace
         imageGallery.innerHTML = '';
         imageManifest.forEach(filename => {
             const thumb = document.createElement('div');
