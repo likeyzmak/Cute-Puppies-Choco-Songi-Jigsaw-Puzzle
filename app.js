@@ -90,30 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initialization ---
     function init() {
-        // --- TEMPORARY TEST CODE ---
-        if (!localStorage.getItem('testDataGenerated_low_scores_2')) { // Changed flag name
-            var LEADERBOARD_KEY = 'jigsawLeaderboard';
-            var MAX_LEADERBOARD_ENTRIES = 50;
-            var fakeScores = [];
-            // Generate scores from 50 down to 1
-            for (var i = 0; i < MAX_LEADERBOARD_ENTRIES; i++) {
-                fakeScores.push({
-                    nickname: 'TestUser' + (i + 1),
-                    score: 50 - i,
-                    difficulty: '4x4',
-                    time: '00:00',
-                    date: new Date().toLocaleDateString(),
-                    emotion: '😥',
-                    timestamp: Date.now() + i // Add staggered timestamp
-                });
-            }
-            localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(fakeScores));
-            localStorage.setItem('testDataGenerated_low_scores_2', 'true');
-            alert('50개의 낮은 점수 테스트 데이터를 등록했습니다. 이제 게임을 플레이하고 점수를 등록하면 새로운 정렬 방식과 삭제 로직을 테스트할 수 있습니다.');
-            window.location.reload();
-        }
-        // --- END TEMPORARY TEST CODE ---
-
         populateGallery();
         addEventListeners();
         updateSoundButtonUI();
@@ -535,19 +511,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('leaderboard-table-container');
         
         if (scores.length === 0) {
-            container.innerHTML = '<p>아직 등록된 점수가 없습니다.</p>';
+            container.innerHTML = '<p>No scores registered yet.</p>';
         } else {
             const table = `
                 <table>
                     <thead>
                         <tr>
-                            <th>순위</th>
-                            <th>닉네임</th>
-                            <th>점수</th>
-                            <th>상태</th>
-                            <th>난이도</th>
-                            <th>시간</th>
-                            <th>날짜</th>
+                            <th>Rank</th>
+                            <th>Nickname</th>
+                            <th>Score</th>
+                            <th>Status</th>
+                            <th>Difficulty</th>
+                            <th>Time</th>
+                            <th>Date</th>
                         </tr>
                     </thead>
                     <tbody>
