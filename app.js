@@ -469,24 +469,16 @@ document.addEventListener('DOMContentLoaded', () => {
         gameOverModal.classList.add('hidden');
     }
 
-    // --- Leaderboard Logic ---
-    function getScores() {
-        const scoresJSON = localStorage.getItem(LEADERBOARD_KEY);
-        return scoresJSON ? JSON.parse(scoresJSON) : [];
-    }
+    // --- Leaderboard Logic (Now using API) ---
+    const API_ENDPOINT = './api/leaderboard';
 
-    function saveScores(scores) {
-        localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(scores));
-    }
-
-    function registerScore() {
+    async function registerScore() {
         const nickname = prompt('등록할 닉네임을 적어 주세요');
         if (!nickname || !nickname.trim()) {
             alert('닉네임이 유효하지 않습니다.');
             return;
         }
 
-        const scores = getScores();
         const newScore = {
             nickname: nickname.trim(),
             score: gameState.finalScore,
@@ -494,68 +486,85 @@ document.addEventListener('DOMContentLoaded', () => {
             time: formatTime(gameState.timeLimit > 0 ? gameState.timeLimit - gameState.time : gameState.time),
             date: new Date().toLocaleDateString(),
             emotion: gameState.emotionText,
-            timestamp: Date.now() // Add timestamp
+            timestamp: Date.now()
         };
 
-        scores.push(newScore);
-        
-        // Sort by timestamp descending to get the most recent scores
-        scores.sort((a, b) => b.timestamp - a.timestamp);
+        try {
+            registerScoreBtn.disabled = true;
+            registerScoreBtn.textContent = 'Submitting...';
 
-        // Keep only the 50 most recent scores
-        if (scores.length > MAX_LEADERBOARD_ENTRIES) {
-            scores.splice(MAX_LEADERBOARD_ENTRIES);
+            const response = await fetch(API_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newScore),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit score.');
+            }
+
+            alert('점수가 성공적으로 등록되었습니다!');
+            showLeaderboard(); // Show the updated leaderboard
+
+        } catch (error) {
+            console.error('Error submitting score:', error);
+            alert('점수 등록에 실패했습니다. 다시 시도해주세요.');
+            registerScoreBtn.disabled = false;
+        } finally {
+            registerScoreBtn.textContent = 'Submit scores';
         }
-
-        // Sort the 50 recent scores by score descending
-        scores.sort((a, b) => b.score - a.score);
-
-        saveScores(scores);
-        registerScoreBtn.disabled = true;
-        alert('점수가 등록되었습니다!');
-        showLeaderboard();
     }
 
-    function showLeaderboard() {
-        const scores = getScores();
-        const container = document.getElementById('leaderboard-table-container');
-        
-        if (scores.length === 0) {
-            container.innerHTML = '<p>No scores registered yet.</p>';
-        } else {
-            const table = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Nickname</th>
-                            <th>Score</th>
-                            <th>Status</th>
-                            <th>Difficulty</th>
-                            <th>Time</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${scores.map((s, i) => `
-                            <tr>
-                                <td>${i + 1}</td>
-                                <td>${s.nickname}</td>
-                                <td>${s.score}</td>
-                                <td>${s.emotion}</td>
-                                <td>${s.difficulty}</td>
-                                <td>${s.time}</td>
-                                <td>${s.date}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-            container.innerHTML = table;
-        }
-        
+    async function showLeaderboard() {
         hideVictoryModal();
         leaderboardModal.classList.remove('hidden');
+        const container = document.getElementById('leaderboard-table-container');
+        container.innerHTML = '<p>Loading scores...</p>';
+
+        try {
+            const response = await fetch(API_ENDPOINT);
+            if (!response.ok) {
+                throw new Error('Failed to fetch scores.');
+            }
+            const scores = await response.json();
+
+            if (scores.length === 0) {
+                container.innerHTML = '<p>No scores registered yet.</p>';
+            } else {
+                const table = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Nickname</th>
+                                <th>Score</th>
+                                <th>Status</th>
+                                <th>Difficulty</th>
+                                <th>Time</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${scores.map((s, i) => `
+                                <tr>
+                                    <td>${i + 1}</td>
+                                    <td>${s.nickname}</td>
+                                    <td>${s.score}</td>
+                                    <td>${s.emotion}</td>
+                                    <td>${s.difficulty}</td>
+                                    <td>${s.time}</td>
+                                    <td>${s.date}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                container.innerHTML = table;
+            }
+        } catch (error) {
+            console.error('Error fetching leaderboard:', error);
+            container.innerHTML = '<p style="color: red;">Could not load leaderboard.</p>';
+        }
     }
 
     function hideLeaderboard() {
