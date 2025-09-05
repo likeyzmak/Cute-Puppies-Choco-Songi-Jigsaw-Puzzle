@@ -1,4 +1,4 @@
-const CACHE_NAME = 'puppy-puzzle-cache-v1';
+const CACHE_NAME = 'puppy-puzzle-cache-v2';
 const urlsToCache = [
   './',
   './index.html',
@@ -6,22 +6,22 @@ const urlsToCache = [
   './app.js',
   './assets/audio/puzzle.mp3',
   './assets/audio/fanfare.mp3',
-  './assets/images/PUZZLE1.png',
-  './assets/images/PUZZLE2.png',
-  './assets/images/PUZZLE3.png',
-  './assets/images/PUZZLE4.png',
-  './assets/images/PUZZLE5.png',
-  './assets/images/PUZZLE6.png',
-  './assets/images/PUZZLE7.png',
-  './assets/images/PUZZLE8.png',
-  './assets/images/PUZZLE10.png',
-  './assets/images/PUZZLE11.png',
-  './assets/images/PUZZLE12.png',
-  './assets/images/PUZZLE13.png',
-  './assets/images/PUZZLE14.png',
-  './assets/images/PUZZLE15.png',
-  './assets/images/PUZZLE16.png',
-  './assets/images/PUZZLE79.png'
+  './assets/images/puzzle1.png',
+  './assets/images/puzzle2.png',
+  './assets/images/puzzle3.png',
+  './assets/images/puzzle4.png',
+  './assets/images/puzzle5.png',
+  './assets/images/puzzle6.png',
+  './assets/images/puzzle7.png',
+  './assets/images/puzzle8.png',
+  './assets/images/puzzle10.png',
+  './assets/images/puzzle11.png',
+  './assets/images/puzzle12.png',
+  './assets/images/puzzle13.png',
+  './assets/images/puzzle14.png',
+  './assets/images/puzzle15.png',
+  './assets/images/puzzle16.png',
+  './assets/images/puzzle79.png'
 ];
 
 self.addEventListener('install', event => {

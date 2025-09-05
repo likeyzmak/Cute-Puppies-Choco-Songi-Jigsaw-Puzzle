@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let drag = null;
 
     const imageManifest = [
-        'PUZZLE1.PNG', 'PUZZLE2.png', 'PUZZLE3.png', 'PUZZLE4.png', 'PUZZLE5.png',
+        'PUZZLE1.png', 'PUZZLE2.png', 'PUZZLE3.png', 'PUZZLE4.png', 'PUZZLE5.png',
         'PUZZLE6.png', 'PUZZLE7.png', 'PUZZLE8.png', 'PUZZLE10.png', 'PUZZLE11.png',
         'PUZZLE12.png', 'PUZZLE13.png', 'PUZZLE14.png', 'PUZZLE15.png', 'PUZZLE16.png',
         'PUZZLE79.png'
