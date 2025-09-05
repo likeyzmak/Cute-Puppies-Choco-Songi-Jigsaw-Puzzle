@@ -200,3 +200,141 @@ body {
     .controls { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
     .controls button span { display: none; }
 }
+
+/* --- Leaderboard Modal --- */
+#leaderboard-modal .modal-content {
+    width: 90%;
+    max-width: 600px;
+    background: linear-gradient(135deg, var(--c-bg-light), #f0f7ff);
+    border: 2px solid white;
+}
+
+.leaderboard-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    color: var(--c-text);
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(255,255,255,0.7);
+}
+
+#leaderboard-table-container {
+    max-height: 60vh;
+    overflow-y: auto;
+    border-radius: 12px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    background-color: rgba(255,255,255,0.5);
+    padding: 8px;
+    margin-bottom: 24px;
+}
+
+/* Custom Scrollbar */
+#leaderboard-table-container::-webkit-scrollbar {
+    width: 10px;
+}
+#leaderboard-table-container::-webkit-scrollbar-track {
+    background: var(--c-bg-light);
+    border-radius: 10px;
+}
+#leaderboard-table-container::-webkit-scrollbar-thumb {
+    background: var(--c-secondary);
+    border-radius: 10px;
+    border: 2px solid var(--c-bg-light);
+}
+#leaderboard-table-container::-webkit-scrollbar-thumb:hover {
+    background: var(--c-accent);
+}
+
+
+#leaderboard-table-container table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 5px;
+    text-align: left;
+}
+
+#leaderboard-table-container th,
+#leaderboard-table-container td {
+    padding: 12px 18px;
+    vertical-align: middle;
+}
+
+#leaderboard-table-container th {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--c-text);
+    text-align: center;
+    border-bottom: 2px solid var(--c-primary);
+}
+
+#leaderboard-table-container td {
+    background: white;
+    color: var(--c-text);
+}
+
+#leaderboard-table-container tr:hover td {
+    background: var(--c-bg-light);
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
+}
+
+
+#leaderboard-table-container td:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--c-accent);
+    text-align: center;
+}
+#leaderboard-table-container td:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+#leaderboard-table-container tbody tr {
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+}
+#leaderboard-table-container tbody tr:hover {
+    box-shadow: var(--shadow-md);
+}
+
+
+.leaderboard-controls {
+    display: flex;
+    justify-content: center;
+}
+
+.leaderboard-controls button {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.2rem;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: var(--grad-blue);
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    box-shadow: var(--shadow-md);
+}
+
+.leaderboard-controls button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Victory Controls Update */
+.victory-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.victory-controls button {
+    flex-grow: 1;
+}

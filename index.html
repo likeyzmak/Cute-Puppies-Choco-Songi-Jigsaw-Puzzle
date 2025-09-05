@@ -68,7 +68,7 @@
                             <h3>Controls</h3>
                             <div class="controls">
                                 <button id="shuffle-btn" aria-label="Shuffle Puzzle">🔄 <span>Shuffle</span></button>
-                                <button id="hint-btn" aria-label="Get a Hint">💡 <span>Hint</span></button>
+                                <button id="view-rankings-btn" aria-label="View Rankings">🏆 <span>View Rankings</span></button>
                                 <button id="original-view-btn" aria-label="View Original Image">👀 <span>Original View</span></button>
                                 <button id="restart-btn" aria-label="Restart Puzzle">🎮 <span>Restart</span></button>
                                 <button id="change-image-btn" aria-label="Change Image">🖼️ <span>Change Image</span></button>
@@ -102,9 +102,11 @@
             <div class="victory-stats">
                 <p>Time: <span id="victory-time"></span></p>
                 <p>Moves: <span id="victory-moves"></span></p>
-                <p>Score: <span id="victory-score"></span></p>
+                <p>Score: <span id="victory-score"></span> <span id="victory-emotion-icon"></span></p>
             </div>
             <div class="victory-controls">
+                <button id="register-score-btn">Submit scores</button>
+                <button id="view-leaderboard-btn">View scores</button>
                 <button id="victory-change-image-btn">🖼️ Change Image</button>
             </div>
         </div>
@@ -116,6 +118,20 @@
             <h2 class="victory-title">GAME OVER</h2>
             <p class="victory-subtitle">Time's up!</p>
             <p>Returning to image selection...</p>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboard-modal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <h2 class="leaderboard-title">🏆 Leaderboard</h2>
+            <div id="leaderboard-table-container">
+                <!-- Leaderboard table will be injected by app.js -->
+            </div>
+            <div class="leaderboard-controls">
+                <button id="leaderboard-change-image-btn">🖼️ 이미지 선택</button>
+                <button id="close-leaderboard-btn">Back</button>
+            </div>
         </div>
     </div>
 
