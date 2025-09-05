@@ -178,6 +178,14 @@ document.addEventListener('DOMContentLoaded', () => {
         createPuzzle();
         startTimer();
         playBGM();
+
+        // Scroll to the puzzle board
+        setTimeout(() => {
+            const puzzleBoardElement = document.getElementById('puzzle-board-container');
+            if (puzzleBoardElement) {
+                puzzleBoardElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100); // A small delay to ensure the layout is stable
     }
 
     function returnToGallery() {
