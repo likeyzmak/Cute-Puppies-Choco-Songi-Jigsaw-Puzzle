@@ -11,5 +11,3 @@
   status = 200
 
 # Explicitly enable the Netlify Blobs plugin
-[[plugins]]
-  package = "@netlify/plugin-blobs"

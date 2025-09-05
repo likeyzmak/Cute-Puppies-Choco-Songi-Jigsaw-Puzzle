@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+    function hideLeaderboard() {
+        leaderboardModal.classList.add('hidden');
+    }
+
     // --- DOM Elements ---
     const galleryScreen = document.getElementById('gallery-screen');
     const imageGallery = document.getElementById('image-gallery');
@@ -13,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Modals
     const difficultyModal = document.getElementById('difficulty-modal');
     const victoryModal = document.getElementById('victory-modal');
-    const gameOverModal = document.getElementById('game-over-modal');
+    const gameOverModal = document = document.getElementById('game-over-modal');
     const leaderboardModal = document.getElementById('leaderboard-modal');
 
     // Buttons
@@ -34,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerScoreBtn = document.getElementById('register-score-btn');
     const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
     const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
-    const leaderboardChangeImageBtn = document.getElementById('leaderboard-change-image-btn');
 
     // Audio
     const bgmAudio = document.getElementById('bgm-audio');
@@ -60,8 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         12: { baseScore: 100, movePenalty: 0.4 }
     };
 
-    const LEADERBOARD_KEY = 'jigsawLeaderboard';
-    const MAX_LEADERBOARD_ENTRIES = 50;
+    
 
     // --- Game State ---
     let gameState = {
@@ -84,9 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const imageManifest = [
         'PUZZLE1.png', 'PUZZLE2.png', 'PUZZLE3.png', 'PUZZLE4.png', 'PUZZLE5.png',
-        'PUZZLE6.png', 'PUZZLE7.png', 'PUZZLE8.png', 'PUZZLE10.png', 'PUZZLE11.png',
-        'PUZZLE12.png', 'PUZZLE13.png', 'PUZZLE14.png', 'PUZZLE15.png', 'PUZZLE16.png',
-        'PUZZLE79.png'
+        'PUZZLE6.png', 'PUZZLE7.png', 'PUZZLE8.png', 'puzzle9.png', 'PUZZLE10.png', 'PUZZLE11.png',
+        'PUZZLE12.png', 'PUZZLE13.png', 'PUZZLE14.png', 'PUZZLE15.png', 'PUZZLE16.png'
     ];
 
     // --- Initialization ---
@@ -298,7 +299,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (drag.hoverEl) {
             targetIdx = +drag.hoverEl.dataset.gridIndex;
             drag.hoverEl.classList.remove('drop-target');
-        } else {
+        }
+        else {
             const { gridSize } = gameState;
             const cellSize = drag.boardRect.width / gridSize;
             const boardX = e.clientX - drag.boardRect.left;
@@ -469,102 +471,73 @@ document.addEventListener('DOMContentLoaded', () => {
         gameOverModal.classList.add('hidden');
     }
 
-    // --- Leaderboard Logic (Now using API) ---
-    const API_ENDPOINT = './api/leaderboard';
-
-    async function registerScore() {
-        const nickname = prompt('등록할 닉네임을 적어 주세요');
-        if (!nickname || !nickname.trim()) {
-            alert('닉네임이 유효하지 않습니다.');
-            return;
-        }
-
-        const newScore = {
-            nickname: nickname.trim(),
-            score: gameState.finalScore,
-            difficulty: `${gameState.gridSize}x${gameState.gridSize}`,
-            time: formatTime(gameState.timeLimit > 0 ? gameState.timeLimit - gameState.time : gameState.time),
-            date: new Date().toLocaleDateString(),
-            emotion: gameState.emotionText,
-            timestamp: Date.now()
-        };
-
-        try {
-            registerScoreBtn.disabled = true;
-            registerScoreBtn.textContent = 'Submitting...';
-
-            const response = await fetch(API_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newScore),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to submit score.');
-            }
-
-            alert('점수가 성공적으로 등록되었습니다!');
-            showLeaderboard(); // Show the updated leaderboard
-
-        } catch (error) {
-            console.error('Error submitting score:', error);
-            alert('점수 등록에 실패했습니다. 다시 시도해주세요.');
-            registerScoreBtn.disabled = false;
-        } finally {
-            registerScoreBtn.textContent = 'Submit scores';
-        }
-    }
+    // --- Leaderboard Logic ---
 
     async function showLeaderboard() {
-        hideVictoryModal();
         leaderboardModal.classList.remove('hidden');
-        const container = document.getElementById('leaderboard-table-container');
-        container.innerHTML = '<p>Loading scores...</p>';
+        const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+        leaderboardTableContainer.innerHTML = '<p style="text-align: center;">리더보드 불러오는 중...</p>';
 
         try {
-            const response = await fetch(API_ENDPOINT);
-            if (!response.ok) {
-                throw new Error('Failed to fetch scores.');
-            }
-            const scores = await response.json();
-
-            if (scores.length === 0) {
-                container.innerHTML = '<p>No scores registered yet.</p>';
+            const response = await fetch('/api/leaderboard');
+            if (response.ok) {
+                const scores = await response.json();
+                renderLeaderboard(scores);
             } else {
-                const table = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Nickname</th>
-                                <th>Score</th>
-                                <th>Status</th>
-                                <th>Difficulty</th>
-                                <th>Time</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${scores.map((s, i) => `
-                                <tr>
-                                    <td>${i + 1}</td>
-                                    <td>${s.nickname}</td>
-                                    <td>${s.score}</td>
-                                    <td>${s.emotion}</td>
-                                    <td>${s.difficulty}</td>
-                                    <td>${s.time}</td>
-                                    <td>${s.date}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-                container.innerHTML = table;
+                leaderboardTableContainer.innerHTML = '<p style="text-align: center; color: red;">리더보드를 불러오는데 실패했습니다.</p>';
             }
         } catch (error) {
             console.error('Error fetching leaderboard:', error);
-            container.innerHTML = '<p style="color: red;">Could not load leaderboard.</p>';
+            leaderboardTableContainer.innerHTML = '<p style="text-align: center; color: red;">네트워크 오류가 발생했습니다.</p>';
         }
+    }
+
+    function renderLeaderboard(scores) {
+        const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+        if (scores.length === 0) {
+            leaderboardTableContainer.innerHTML = '<p style="text-align: center;">아직 등록된 점수가 없습니다.</p>';
+            return;
+        }
+
+        let tableHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>닉네임</th>
+                        <th>점수</th>
+                        <th>난이도</th>
+                        <th>시간</th>
+                        <th>날짜</th>
+                        <th>감정</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        scores.forEach((score, index) => {
+            tableHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${score.nickname}</td>
+                    <td>${score.score}</td>
+                    <td>${score.difficulty}</td>
+                    <td>${score.time}</td>
+                    <td>${score.date}</td>
+                    <td>${score.emotion}</td>
+                </tr>
+            `;
+        });
+
+        tableHTML += `
+                </tbody>
+            </table>
+        `;
+        leaderboardTableContainer.innerHTML = tableHTML;
+    }
+
+    function hideGameOverModal() {
+        gameOverModal.classList.add('hidden');
     }
 
     function hideLeaderboard() {
