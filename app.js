@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Modals
     const difficultyModal = document.getElementById('difficulty-modal');
     const victoryModal = document.getElementById('victory-modal');
-    const gameOverModal = document.getElementById('game-over-modal'); // Added
+    const gameOverModal = document.getElementById('game-over-modal');
+    const leaderboardModal = document.getElementById('leaderboard-modal');
 
     // Buttons
     const shuffleBtn = document.getElementById('shuffle-btn');
@@ -27,13 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const victoryChangeImageBtn = document.getElementById('victory-change-image-btn');
     const victoryScoreEl = document.getElementById('victory-score');
 
-    // Leaderboard Elements
-    const leaderboardModal = document.getElementById('leaderboard-modal');
-    const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+    // Leaderboard Buttons
     const registerScoreBtn = document.getElementById('register-score-btn');
     const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
     const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
-    
 
     // Audio
     const bgmAudio = document.getElementById('bgm-audio');
@@ -44,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = confettiCanvas.getContext('2d');
 
     // --- Game Config ---
-    const timeLimits = { // Added
+    const timeLimits = {
         4: 120,    // 2 minutes
         6: 300,    // 5 minutes
         8: 600,    // 10 minutes
@@ -58,6 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
         12: { baseScore: 5000, movePenalty: 4 }
     };
 
+    const LEADERBOARD_KEY = 'jigsawLeaderboard';
+    const MAX_LEADERBOARD_ENTRIES = 50;
+
     // --- Game State ---
     let gameState = {
         imageSrc: '',
@@ -65,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         perm: [],
         moves: 0,
         time: 0,
-        timeLimit: 0, // Added
+        timeLimit: 0,
         timerInterval: null,
         isSoundOn: true,
         isGameActive: false,
@@ -118,9 +119,12 @@ document.addEventListener('DOMContentLoaded', () => {
         changeImageBtn.addEventListener('click', returnToGallery);
         victoryChangeImageBtn.addEventListener('click', returnToGallery);
         changeDifficultyBtn.addEventListener('click', () => showDifficultyModal(true));
-        victoryChangeDifficultyBtn.addEventListener('click', () => showDifficultyModal(true));
         soundToggleBtn.addEventListener('click', toggleSound);
         
+        // Leaderboard listeners
+        registerScoreBtn.addEventListener('click', registerScore);
+        viewLeaderboardBtn.addEventListener('click', showLeaderboard);
+        closeLeaderboardBtn.addEventListener('click', hideLeaderboard);
     }
 
     // --- Game Flow ---
@@ -150,13 +154,14 @@ document.addEventListener('DOMContentLoaded', () => {
         gameState.imageSrc = imageSrc;
         gameState.gridSize = gridSize;
         gameState.isGameActive = true;
-        gameState.timeLimit = timeLimits[gridSize] || 0; // Set time limit
-        gameState.time = gameState.timeLimit; // Set initial time
+        gameState.timeLimit = timeLimits[gridSize] || 0;
+        gameState.time = gameState.timeLimit;
 
         galleryScreen.classList.add('hidden');
         gameScreen.classList.remove('hidden');
         hideVictoryModal();
-        hideGameOverModal(); // Ensure game over modal is hidden
+        hideGameOverModal();
+        hideLeaderboard();
 
         if (isNewImage) {
             currentPuzzleThumbnail.src = imageSrc;
@@ -175,7 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gameScreen.classList.add('hidden');
         galleryScreen.classList.remove('hidden');
         hideVictoryModal();
-        hideGameOverModal(); // Ensure game over modal is hidden
+        hideGameOverModal();
+        hideLeaderboard();
         stopTimer();
         pauseBGM();
     }
@@ -306,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- UI & Stats ---
-    function formatTime(seconds) { // Helper function
+    function formatTime(seconds) {
         const min = Math.floor(seconds / 60).toString().padStart(2, '0');
         const sec = (seconds % 60).toString().padStart(2, '0');
         return `${min}:${sec}`;
@@ -314,11 +320,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetStats() {
         gameState.moves = 0;
-        gameState.time = gameState.timeLimit; // Reset to full time
+        gameState.time = gameState.timeLimit;
         moveCounterEl.textContent = '0';
-        timerEl.textContent = formatTime(gameState.time); // Format initial time
+        timerEl.textContent = formatTime(gameState.time);
         stopTimer();
-        registerScoreBtn.disabled = true; // Disable button on new game
+        registerScoreBtn.disabled = true;
     }
 
     function incrementMoves() {
@@ -328,13 +334,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startTimer() {
         if (gameState.timerInterval) clearInterval(gameState.timerInterval);
-        if (gameState.timeLimit === 0) { // If no time limit, behave as before (count up)
+        if (gameState.timeLimit === 0) {
             gameState.time = 0;
             gameState.timerInterval = setInterval(() => {
                 gameState.time++;
                 timerEl.textContent = formatTime(gameState.time);
             }, 1000);
-        } else { // Countdown logic
+        } else {
             gameState.timerInterval = setInterval(() => {
                 gameState.time--;
                 timerEl.textContent = formatTime(gameState.time);
@@ -352,25 +358,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Features (Hint, Original View) ---
     let hintTimeout = null;
-    let hintTargetEl = null; // Global variable for the dynamic target highlight
+    let hintTargetEl = null;
 
     function showHint() {
         clearHints();
-        const misplacedCell = gameState.perm.findIndex((piece, cell) => piece !== cell); // Cell index that is wrong
-        if (misplacedCell === -1) return; // Puzzle is solved
+        const misplacedCell = gameState.perm.findIndex((piece, cell) => piece !== cell);
+        if (misplacedCell === -1) return;
 
-        const pieceId = gameState.perm[misplacedCell]; // The piece (original index) currently at misplacedCell
-        const correctDestinationCell = pieceId; // The cell where this piece should ultimately go
+        const pieceId = gameState.perm[misplacedCell];
+        const correctDestinationCell = pieceId;
 
-        // Highlight the piece that is currently at the misplaced cell
         const sourceTileEl = puzzleBoard.querySelector(`[data-grid-index="${misplacedCell}"]`);
         sourceTileEl.classList.add('hint-source');
 
-        // Create and position the dynamic target highlight
         hintTargetEl = document.createElement('div');
         hintTargetEl.classList.add('hint-target-cell');
 
-        // Calculate position and size of the target cell
         const boardSize = parseFloat(puzzleBoard.style.getPropertyValue('--board-size'));
         const tileSize = boardSize / gameState.gridSize;
 
@@ -390,7 +393,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function clearHints() {
         clearTimeout(hintTimeout);
         document.querySelectorAll('.hint-source').forEach(el => el.classList.remove('hint-source'));
-        // Remove the dynamic target highlight element
         if (hintTargetEl && hintTargetEl.parentNode) {
             hintTargetEl.parentNode.removeChild(hintTargetEl);
             hintTargetEl = null;
@@ -415,10 +417,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (config) {
             finalScore = Math.max(0, config.baseScore - (gameState.moves * config.movePenalty) - timeTaken);
         }
-        gameState.finalScore = Math.round(finalScore); // Store score
+        gameState.finalScore = Math.round(finalScore);
         victoryScoreEl.textContent = gameState.finalScore;
 
-        registerScoreBtn.disabled = false; // Enable score registration
+        registerScoreBtn.disabled = false;
         victoryModal.classList.remove('hidden');
         playFanfare();
         runConfetti();
@@ -429,25 +431,108 @@ document.addEventListener('DOMContentLoaded', () => {
         stopConfetti();
     }
 
-    function handleGameOver() { // Added
+    function handleGameOver() {
         stopTimer();
         gameState.isGameActive = false;
         gameOverModal.classList.remove('hidden');
         pauseBGM();
         setTimeout(() => {
-            returnToGallery(); // This already hides the modal
+            returnToGallery();
         }, 3000);
     }
 
-    function hideGameOverModal() { // Added
+    function hideGameOverModal() {
         gameOverModal.classList.add('hidden');
+    }
+
+    // --- Leaderboard Logic ---
+    function getScores() {
+        const scoresJSON = localStorage.getItem(LEADERBOARD_KEY);
+        return scoresJSON ? JSON.parse(scoresJSON) : [];
+    }
+
+    function saveScores(scores) {
+        localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(scores));
+    }
+
+    function registerScore() {
+        const nickname = prompt('등록할 닉네임을 적어 주세요');
+        if (!nickname || !nickname.trim()) {
+            alert('닉네임이 유효하지 않습니다.');
+            return;
+        }
+
+        const scores = getScores();
+        const newScore = {
+            nickname: nickname.trim(),
+            score: gameState.finalScore,
+            difficulty: `${gameState.gridSize}x${gameState.gridSize}`,
+            time: formatTime(gameState.timeLimit > 0 ? gameState.timeLimit - gameState.time : gameState.time),
+            date: new Date().toLocaleDateString()
+        };
+
+        scores.push(newScore);
+        
+        scores.sort((a, b) => b.score - a.score);
+
+        if (scores.length > MAX_LEADERBOARD_ENTRIES) {
+            scores.splice(MAX_LEADERBOARD_ENTRIES);
+        }
+
+        saveScores(scores);
+        registerScoreBtn.disabled = true;
+        alert('점수가 등록되었습니다!');
+        showLeaderboard();
+    }
+
+    function showLeaderboard() {
+        const scores = getScores();
+        const container = document.getElementById('leaderboard-table-container');
+        
+        if (scores.length === 0) {
+            container.innerHTML = '<p>아직 등록된 점수가 없습니다.</p>';
+        } else {
+            const table = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>닉네임</th>
+                            <th>점수</th>
+                            <th>난이도</th>
+                            <th>시간</th>
+                            <th>날짜</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${scores.map((s, i) => `
+                            <tr>
+                                <td>${i + 1}</td>
+                                <td>${s.nickname}</td>
+                                <td>${s.score}</td>
+                                <td>${s.difficulty}</td>
+                                <td>${s.time}</td>
+                                <td>${s.date}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            container.innerHTML = table;
+        }
+        
+        hideVictoryModal();
+        leaderboardModal.classList.remove('hidden');
+    }
+
+    function hideLeaderboard() {
+        leaderboardModal.classList.add('hidden');
     }
 
     // --- Audio Control ---
     function handleFirstInteraction() {
         if (gameState.firstInteraction) return;
         gameState.firstInteraction = true;
-        // Unlock audio context
         bgmAudio.play().then(() => {
             if (gameState.isGameActive) {
                 playBGM();
@@ -565,12 +650,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 .catch(err => {
                     console.log('ServiceWorker registration failed: ', err);
                 });
-        });
-    }
-
-    // --- Start the app ---
-    init();
-});         });
         });
     }
 
