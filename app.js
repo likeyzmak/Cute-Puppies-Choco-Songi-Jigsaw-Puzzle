@@ -76,13 +76,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function populateGallery() {
         imageGallery.innerHTML = '';
-        imageManifest.forEach(filename => {
+        imageManifest.forEach(originalFilename => {
+            const filename = originalFilename.toLowerCase(); // Force lowercase
             const thumb = document.createElement('div');
             thumb.className = 'gallery-thumbnail';
-            thumb.innerHTML = `<img src="assets/images/${filename}" alt="Puzzle thumbnail ${filename}">`;
+            const imageUrl = `assets/images/${filename}`;
+            
+            thumb.innerHTML = `<img src="${imageUrl}" alt="Puzzle thumbnail ${filename}">`;
             thumb.addEventListener('click', () => {
                 handleFirstInteraction();
-                selectImage(`assets/images/${filename}`);
+                selectImage(imageUrl);
             });
             imageGallery.appendChild(thumb);
         });

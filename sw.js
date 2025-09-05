@@ -1,28 +1,23 @@
-const CACHE_NAME = 'puppy-puzzle-cache-v1';
-const urlsToCache = [
+const CACHE_NAME = 'puppy-puzzle-cache-v3'; // Cache version bumped to v3
+const baseUrls = [
   './',
   './index.html',
   './styles.css',
   './app.js',
   './assets/audio/puzzle.mp3',
-  './assets/audio/fanfare.mp3',
-  './assets/images/PUZZLE1.png',
-  './assets/images/PUZZLE2.png',
-  './assets/images/PUZZLE3.png',
-  './assets/images/PUZZLE4.png',
-  './assets/images/PUZZLE5.png',
-  './assets/images/PUZZLE6.png',
-  './assets/images/PUZZLE7.png',
-  './assets/images/PUZZLE8.png',
-  './assets/images/PUZZLE10.png',
-  './assets/images/PUZZLE11.png',
-  './assets/images/PUZZLE12.png',
-  './assets/images/PUZZLE13.png',
-  './assets/images/PUZZLE14.png',
-  './assets/images/PUZZLE15.png',
-  './assets/images/PUZZLE16.png',
-  './assets/images/PUZZLE79.png'
+  './assets/audio/fanfare.mp3'
 ];
+
+// This list should ideally be in a shared config, but for a direct fix:
+const imageManifest = [
+    'PUZZLE1.png', 'PUZZLE2.png', 'PUZZLE3.png', 'PUZZLE4.png', 'PUZZLE5.png',
+    'PUZZLE6.png', 'PUZZLE7.png', 'PUZZLE8.png', 'PUZZLE10.png', 'PUZZLE11.png',
+    'PUZZLE12.png', 'PUZZLE13.png', 'PUZZLE14.png', 'PUZZLE15.png', 'PUZZLE16.png',
+    'PUZZLE79.png'
+];
+
+const imageUrls = imageManifest.map(name => `./assets/images/${name.toLowerCase()}`);
+const urlsToCache = baseUrls.concat(imageUrls);
 
 self.addEventListener('install', event => {
   event.waitUntil(
