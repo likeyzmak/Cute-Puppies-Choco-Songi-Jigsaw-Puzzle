@@ -26,6 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const victoryChangeImageBtn = document.getElementById('victory-change-image-btn');
     const victoryScoreEl = document.getElementById('victory-score');
+
+    // Leaderboard Elements
+    const leaderboardModal = document.getElementById('leaderboard-modal');
+    const leaderboardTableContainer = document.getElementById('leaderboard-table-container');
+    const registerScoreBtn = document.getElementById('register-score-btn');
+    const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
+    const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
     
 
     // Audio
@@ -63,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isSoundOn: true,
         isGameActive: false,
         firstInteraction: false,
+        finalScore: 0,
     };
 
     let tiles = [];
@@ -310,6 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
         moveCounterEl.textContent = '0';
         timerEl.textContent = formatTime(gameState.time); // Format initial time
         stopTimer();
+        registerScoreBtn.disabled = true; // Disable button on new game
     }
 
     function incrementMoves() {
@@ -401,14 +410,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('victory-time').textContent = formatTime(timeTaken);
         document.getElementById('victory-moves').textContent = gameState.moves;
 
-        // Calculate Score
         const config = scoringConfig[gameState.gridSize];
         let finalScore = 0;
         if (config) {
-            finalScore = Math.max(0, config.baseScore - (gameState.moves * config.movePenalty));
+            finalScore = Math.max(0, config.baseScore - (gameState.moves * config.movePenalty) - timeTaken);
         }
-        victoryScoreEl.textContent = finalScore; // Update score display
+        gameState.finalScore = Math.round(finalScore); // Store score
+        victoryScoreEl.textContent = gameState.finalScore;
 
+        registerScoreBtn.disabled = false; // Enable score registration
         victoryModal.classList.remove('hidden');
         playFanfare();
         runConfetti();
@@ -555,6 +565,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 .catch(err => {
                     console.log('ServiceWorker registration failed: ', err);
                 });
+        });
+    }
+
+    // --- Start the app ---
+    init();
+});         });
         });
     }
 

@@ -105,6 +105,8 @@
                 <p>Score: <span id="victory-score"></span></p>
             </div>
             <div class="victory-controls">
+                <button id="register-score-btn">✏️ 점수 등록</button>
+                <button id="view-leaderboard-btn">🏆 점수 보기</button>
                 <button id="victory-change-image-btn">🖼️ Change Image</button>
             </div>
         </div>
@@ -116,6 +118,19 @@
             <h2 class="victory-title">GAME OVER</h2>
             <p class="victory-subtitle">Time's up!</p>
             <p>Returning to image selection...</p>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboard-modal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <h2 class="leaderboard-title">🏆 Leaderboard</h2>
+            <div id="leaderboard-table-container">
+                <!-- Leaderboard table will be injected by app.js -->
+            </div>
+            <div class="leaderboard-controls">
+                <button id="close-leaderboard-btn">Back</button>
+            </div>
         </div>
     </div>
 

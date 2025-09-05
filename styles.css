@@ -200,3 +200,82 @@ body {
     .controls { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
     .controls button span { display: none; }
 }
+
+/* Leaderboard Modal */
+.leaderboard-title {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    margin-bottom: 24px;
+    color: var(--c-primary);
+    text-align: center;
+}
+
+#leaderboard-table-container {
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+#leaderboard-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+#leaderboard-table-container th,
+#leaderboard-table-container td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--c-bg-dark);
+}
+
+#leaderboard-table-container th {
+    background-color: var(--c-bg-light);
+    font-weight: 700;
+    position: sticky;
+    top: 0;
+}
+
+#leaderboard-table-container tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+#leaderboard-table-container tbody tr:hover {
+    background-color: var(--c-bg-dark);
+}
+
+.leaderboard-controls {
+    display: flex;
+    justify-content: center;
+}
+
+.leaderboard-controls button {
+    font-family: var(--font-main);
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: var(--grad-blue);
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.leaderboard-controls button:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Victory Controls Update */
+.victory-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.victory-controls button {
+    flex-grow: 1;
+}
