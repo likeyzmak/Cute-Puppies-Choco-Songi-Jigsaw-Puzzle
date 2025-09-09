@@ -1,9 +1,11 @@
 // This is our serverless function for handling the leaderboard.
 // It runs on Netlify's servers, not in the browser.
 
-import { getStore } from "@netlify/blobs";
+import { MongoClient } from "mongodb";
 
-const LEADERBOARD_STORE_KEY = "scores";
+const uri = process.env.MONGODB_URI;
+const client = new MongoClient(uri);
+
 const MAX_LEADERBOARD_ENTRIES = 50;
 
 export const handler = async (event) => {
@@ -23,18 +25,22 @@ export const handler = async (event) => {
     };
   }
 
-  const store = getStore("leaderboard");
+  try {
+    await client.connect();
+    const database = client.db("leaderboard_db"); // Use your desired database name
+    const scoresCollection = database.collection("scores");
 
   // Handle GET request to fetch scores
   if (event.httpMethod === "GET") {
     try {
-      const scores = await store.get(LEADERBOARD_STORE_KEY, { type: "json" }) || [];
+      const scores = await scoresCollection.find({}).sort({ score: -1 }).limit(MAX_LEADERBOARD_ENTRIES).toArray();
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify(scores),
       };
     } catch (error) {
+      console.error("Error retrieving scores:", error);
       return {
         statusCode: 500,
         headers,
@@ -57,14 +63,10 @@ export const handler = async (event) => {
         };
       }
 
-      // Get current scores, add the new one, sort, and trim
-      const currentScores = await store.get(LEADERBOARD_STORE_KEY, { type: "json" }) || [];
-      currentScores.push(newScore);
-      currentScores.sort((a, b) => b.score - a.score); // Sort descending
-      const updatedScores = currentScores.slice(0, MAX_LEADERBOARD_ENTRIES); // Keep top 50
+      await scoresCollection.insertOne(newScore);
 
-      // Save the updated list back to the blob store
-      await store.setJSON(LEADERBOARD_STORE_KEY, updatedScores);
+      // Get updated scores, sort, and trim
+      const updatedScores = await scoresCollection.find({}).sort({ score: -1 }).limit(MAX_LEADERBOARD_ENTRIES).toArray();
 
       return {
         statusCode: 200,
@@ -72,6 +74,7 @@ export const handler = async (event) => {
         body: JSON.stringify({ success: true, scores: updatedScores }),
       };
     } catch (error) {
+      console.error("Error saving score:", error);
       return {
         statusCode: 500,
         headers,
@@ -86,4 +89,14 @@ export const handler = async (event) => {
     headers,
     body: JSON.stringify({ error: "Method Not Allowed" }),
   };
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: "Failed to connect to database." }),
+    };
+  } finally {
+    await client.close();
+  }
 };

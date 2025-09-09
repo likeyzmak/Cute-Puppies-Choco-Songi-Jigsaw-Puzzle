@@ -1,0 +1,147 @@
+<!--
+  HOW TO USE:
+  1. Add Images: Place your 10 puzzle images inside the 'assets/images/' folder.
+     The game will automatically load them based on the 'imageManifest' array in 'app.js'.
+     The filenames in the manifest must exactly match the files in the folder.
+     Example: 'PUZZLE1.PNG', 'my-image.jpg', etc.
+
+  2. Add Audio: Place 'puzzle.mp3' (background music) and 'fanfare.mp3' (win sound)
+     into the 'assets/audio/' folder. The game is hardcoded to look for these specific filenames.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐶🧩 Cute Puppies: Choco & Songi</title>
+    
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-animation"></div>
+
+    <div id="game-container">
+        <header class="main-header">
+            <h1>🐶🧩 Cute Puppies: Choco & Songi</h1>
+        </header>
+
+        <main id="main-content">
+            <!-- Start Screen: Image Gallery -->
+            <div id="gallery-screen">
+                <h2>Choose a Puzzle</h2>
+                <div id="image-gallery">
+                    <!-- Thumbnails will be injected by app.js -->
+                </div>
+            </div>
+
+            <!-- Game Screen -->
+            <div id="game-screen" class="hidden">
+                <div class="top-bar">
+                    <div class="puzzle-info">
+                        <img id="current-puzzle-thumbnail" src="" alt="Current Puzzle Thumbnail">
+                        <span id="difficulty-label" class="hud-badge"></span>
+                    </div>
+                    <div class="stats">
+                        <span id="timer-badge" class="hud-badge">⏱️ Time: <span id="timer">00:00</span></span>
+                        <button id="hint-btn" aria-label="Get a Hint" class="hud-badge">💡 <span>Hint</span></button>
+                        <span id="moves-badge" class="hud-badge">🎯 Moves: <span id="move-counter">0</span></span>
+                    </div>
+                </div>
+
+                <div class="game-body">
+                    <div id="puzzle-board-container">
+                        <div id="puzzle-board"></div>
+                        <canvas id="confetti-canvas"></canvas>
+                    </div>
+                    <div class="sidebar">
+                        <div class="preview-container card">
+                            <h3>Original Preview</h3>
+                            <div class="polaroid">
+                                <img id="original-preview" src="" alt="Original Puzzle Image Preview">
+                            </div>
+                        </div>
+                        <div class="controls-container card">
+                            <h3>Controls</h3>
+                            <div class="controls">
+                                <button id="shuffle-btn" aria-label="Shuffle Puzzle">🔄 <span>Shuffle</span></button>
+                                <button id="view-rankings-btn" aria-label="View Rankings">🏆 <span>View Rankings</span></button>
+                                <button id="original-view-btn" aria-label="View Original Image">👀 <span>Original View</span></button>
+                                <button id="restart-btn" aria-label="Restart Puzzle">🎮 <span>Restart</span></button>
+                                <button id="change-image-btn" aria-label="Change Image">🖼️ <span>Change Image</span></button>
+                                <button id="change-difficulty-btn" aria-label="Change Difficulty">🎚️ <span>Change Difficulty</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Difficulty Selection Modal -->
+    <div id="difficulty-modal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <h3>Choose Difficulty</h3>
+            <div class="difficulty-options">
+                <button class="difficulty-btn" data-difficulty="3">3 &times; 3</button>
+                <button class="difficulty-btn" data-difficulty="4">4 &times; 4</button>
+                <button class="difficulty-btn" data-difficulty="6">6 &times; 6</button>
+                <button class="difficulty-btn" data-difficulty="10">10 &times; 10</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory Modal -->
+    <div id="victory-modal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <h2 class="victory-title">Puzzle Completed!! 🎉</h2>
+            <p class="victory-subtitle">Puzzle Completed!</p>
+            <div class="victory-stats">
+                <p>Time: <span id="victory-time"></span></p>
+                <p>Moves: <span id="victory-moves"></span></p>
+                <p>Score: <span id="victory-score"></span> <span id="victory-emotion-icon"></span></p>
+            </div>
+            <div class="victory-controls">
+                <button id="register-score-btn">Submit scores</button>
+                <button id="view-leaderboard-btn">View scores</button>
+                <button id="victory-change-image-btn">🖼️ Change Image</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="game-over-modal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <h2 class="victory-title">GAME OVER</h2>
+            <p class="victory-subtitle">Time's up!</p>
+            <p>Returning to image selection...</p>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboard-modal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <h2 class="leaderboard-title">🏆 Leaderboard</h2>
+            <div id="leaderboard-table-container">
+                <!-- Leaderboard table will be injected by app.js -->
+            </div>
+            <div class="leaderboard-controls">
+                <button id="leaderboard-change-image-btn">Change Image</button>
+                <button id="close-leaderboard-btn">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Sound Button -->
+    <button id="sound-toggle-btn" aria-label="Toggle Sound">🎵</button>
+
+    <audio id="bgm-audio" src="assets/audio/puzzle.mp3" loop></audio>
+    <audio id="fanfare-audio" src="assets/audio/fanfare.mp3"></audio>
+    <audio id="combo-audio" src="assets/audio/combo.mp3"></audio>
+
+    <script src="app.js"></script>
+</body>
+</html>
